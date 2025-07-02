@@ -11,6 +11,7 @@ import { SpotifySearch } from '../components/SpotifySearch';
 import { SpotifyDebug } from '../components/SpotifyDebug';
 import { TrackDebug } from '../components/TrackDebug';
 import { AppInfo } from '../components/AppInfo';
+import { AgentBattleMode } from '../components/AgentBattleMode';
 import type { Track, DJSession } from '../types/dj';
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
   const [spotifyToken, setSpotifyToken] = useState<string | null>(null);
   const [currentDeviceId, setCurrentDeviceId] = useState<string>('');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [mode, setMode] = useState<'human-ai' | 'agent-battle'>('human-ai');
 
   // Check for Spotify token on mount
   useEffect(() => {
@@ -235,13 +237,80 @@ export default function Home() {
         <SpotifyAuth onAuthSuccess={(token) => setSpotifyToken(token)} />
       ) : !isSessionActive ? (
         <div style={{ textAlign: 'center', marginTop: '100px' }}>
-          <h2 style={{ marginBottom: '20px' }}>Ready to start a Back2Back session?</h2>
-          <button className="button" onClick={startSession} style={{ fontSize: '20px', padding: '15px 30px' }}>
-            Start Session
-          </button>
+          <h2 style={{ marginBottom: '20px' }}>Choose Your Mode</h2>
+          
+          <div style={{ display: 'flex', gap: '40px', justifyContent: 'center', marginBottom: '40px' }}>
+            <button 
+              className="button" 
+              onClick={() => setMode('human-ai')}
+              style={{ 
+                fontSize: '18px', 
+                padding: '20px 30px',
+                background: mode === 'human-ai' ? '#00a8ff' : '#444',
+                minWidth: '200px',
+              }}
+            >
+              👤 Human vs 🤖 AI
+            </button>
+            
+            <button 
+              className="button" 
+              onClick={() => setMode('agent-battle')}
+              style={{ 
+                fontSize: '18px', 
+                padding: '20px 30px',
+                background: mode === 'agent-battle' ? '#ff0066' : '#444',
+                minWidth: '200px',
+              }}
+            >
+              🤖 AI vs 🤖 AI
+            </button>
+          </div>
+          
+          {mode === 'human-ai' ? (
+            <div>
+              <p style={{ marginBottom: '20px', color: '#888' }}>
+                Collaborate with an AI DJ in a Back2Back session
+              </p>
+              <button className="button" onClick={startSession} style={{ fontSize: '20px', padding: '15px 30px' }}>
+                Start Session
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p style={{ marginBottom: '20px', color: '#888' }}>
+                Watch two AI DJs battle it out in an epic mix-off!
+              </p>
+              <button 
+                className="button" 
+                onClick={() => setIsSessionActive(true)} 
+                style={{ fontSize: '20px', padding: '15px 30px', background: '#ff0066' }}
+              >
+                Enter Battle Arena
+              </button>
+            </div>
+          )}
         </div>
+      ) : mode === 'agent-battle' ? (
+        <AgentBattleMode 
+          spotifyToken={spotifyToken}
+          onSelectTrack={(track) => playTrack(track)}
+          onBack={() => setIsSessionActive(false)}
+        />
       ) : (
         <>
+          <button 
+            onClick={() => {
+              setIsSessionActive(false);
+              setHumanTrack(null);
+              setAiTrack(null);
+            }}
+            className="button"
+            style={{ marginBottom: '20px' }}
+          >
+            ← Back to Mode Selection
+          </button>
+          
           <SessionInfo session={session} />
           
           <AppInfo />

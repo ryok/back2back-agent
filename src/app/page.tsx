@@ -223,14 +223,13 @@ export default function Home() {
         Back2Back DJ
       </h1>
       
-      {/* Spotify Web Playback SDK disabled due to connection issues
       {spotifyToken && (
         <SpotifyPlayer 
           token={spotifyToken} 
           onPlayerReady={(deviceId) => setCurrentDeviceId(deviceId)}
           onStateChange={(state) => setIsPlaying(!state.paused)}
         />
-      )} */}
+      )}
       
       {!spotifyToken ? (
         <SpotifyAuth onAuthSuccess={(token) => setSpotifyToken(token)} />
@@ -251,7 +250,7 @@ export default function Home() {
             <DJDeck
               title="Human DJ"
               track={humanTrack}
-              isPlaying={crossfaderPosition <= 50}
+              isPlaying={crossfaderPosition <= 50 && isPlaying}
               onLoadTrack={(track) => loadTrack(track, 'human')}
               onPlayTrack={playTrack}
               volume={100 - crossfaderPosition}
@@ -260,7 +259,7 @@ export default function Home() {
             <DJDeck
               title="AI DJ"
               track={aiTrack}
-              isPlaying={crossfaderPosition >= 50}
+              isPlaying={crossfaderPosition >= 50 && isPlaying}
               onLoadTrack={(track) => loadTrack(track, 'ai')}
               onPlayTrack={playTrack}
               onRequestTrack={requestAITrack}
@@ -289,10 +288,9 @@ export default function Home() {
       )}
       
       {/* Debug Components */}
-      {/* Spotify Debug disabled due to SDK issues
       {spotifyToken && currentDeviceId && (
         <SpotifyDebug token={spotifyToken} deviceId={currentDeviceId} />
-      )} */}
+      )}
       
       {isSessionActive && (
         <TrackDebug humanTrack={humanTrack} aiTrack={aiTrack} />

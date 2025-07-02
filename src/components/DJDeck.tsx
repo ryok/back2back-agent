@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Track } from '../types/dj';
-import { AudioPlayer } from './AudioPlayer';
 
 interface DJDeckProps {
   title: string;
@@ -52,11 +51,11 @@ export function DJDeck({ title, track, isPlaying, onLoadTrack, onRequestTrack, o
         </div>
       )}
       
-      <AudioPlayer 
-        track={track} 
-        isActive={isPlaying}
-        volume={volume}
-      />
+      <div className="waveform">
+        {isPlaying && (
+          <div className="waveform-progress" style={{ width: '30%' }} />
+        )}
+      </div>
       
       <div className="controls">
         {isAI && onRequestTrack && (
@@ -72,9 +71,18 @@ export function DJDeck({ title, track, isPlaying, onLoadTrack, onRequestTrack, o
             {isLoading ? '🔄 Searching...' : '🤖 Request AI Selection'}
           </button>
         )}
-        <div style={{ fontSize: '12px', color: '#888', textAlign: 'center', marginTop: '10px' }}>
-          {isPlaying ? '🎵 Active Deck' : '⏸ Inactive'}
-        </div>
+        {track && onPlayTrack && (
+          <button 
+            className="button" 
+            onClick={() => onPlayTrack(track)}
+            style={{ background: '#1DB954' }}
+          >
+            ▶ Play Track
+          </button>
+        )}
+        <button className="button" disabled={!track}>
+          {isPlaying ? '⏸ Playing' : '⏹ Stopped'}
+        </button>
       </div>
     </div>
   );
